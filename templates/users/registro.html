@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}Crear cuenta - Soundfy{% endblock %}
+
+{% block contenido_auth %}
+<div class="contenedor-auth">
+    <div class="tarjeta-auth">
+        <div class="navbar-logo">
+            <a href="{% url 'inicio' %}">
+                <img src="{% static 'img/logo2.png' %}" alt="Soundfy">
+            </a>
+        </div>
+
+        <h2>Crea tu cuenta en Soundfy</h2>
+
+        <form method="POST" class="formulario-auth">
+            {% csrf_token %}
+            {% for campo in formulario %}
+                <div class="campo-formulario">
+                    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                    {{ campo }}
+                    {% if campo.errors %}
+                        <span class="error-campo">{{ campo.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-primario btn-bloque">Crear cuenta</button>
+        </form>
+
+        <p class="auth-enlace">
+            ¿Ya tienes cuenta? <a href="{% url 'login' %}">Inicia sesión</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

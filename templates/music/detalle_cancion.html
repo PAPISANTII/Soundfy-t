@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ cancion.titulo }} - Soundfy{% endblock %}
+
+{% block contenido %}
+<div class="detalle-cancion">
+    <div class="detalle-portada">
+        {% if cancion.portada %}
+            <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}">
+        {% else %}
+            <div class="portada-placeholder grande">♪</div>
+        {% endif %}
+    </div>
+
+    <div class="detalle-info">
+        <span class="texto-muted">Canción</span>
+        <h1>{{ cancion.titulo }}</h1>
+        <a href="{% url 'perfil' username=cancion.artista.username %}" class="detalle-artista">
+            {{ cancion.artista.username }}
+        </a>
+        {% if cancion.album %}
+            <span class="texto-muted">{{ cancion.album.titulo }}</span>
+        {% endif %}
+        <div class="detalle-acciones">
+            <button class="btn-primario" onclick="reproducirCancion(
+                '{{ cancion.archivo_audio.url }}',
+                '{{ cancion.titulo }}',
+                '{{ cancion.artista.username }}',
+                '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
+                {{ cancion.pk }}
+            )">
+                ▶ Reproducir
+            </button>
+
+            <button class="btn-me-gusta {% if ya_gusta %}activo{% endif %}"
+                    data-pk="{{ cancion.pk }}"
+                    onclick="toggleMeGusta(this)">
+                {% if ya_gusta %}♥{% else %}♡{% endif %}
+            </button>
+
+            {% if playlists_usuario %}
+            <div class="dropdown-playlist">
+                <button class="btn-secundario">+ Añadir a playlist</button>
+                <div class="dropdown-menu">
+                    {% for playlist in playlists_usuario %}
+                        <button onclick="añadirAPlaylist({{ cancion.pk }}, {{ playlist.pk }}, this)">
+                            {{ playlist.nombre }}
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="detalle-stats">
+            <span id="contador-reproducciones">{{ cancion.reproducciones }} reproducciones</span>
+            {% if cancion.genero %}<span>{{ cancion.genero.nombre }}</span>{% endif %}
+        </div>
+
+        {% if cancion.artista == request.user %}
+        <div style="margin-top: 1rem">
+            <a href="{% url 'editar_cancion' pk=cancion.pk %}" class="btn-secundario">Editar</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const csrfToken = '{{ csrf_token }}';
+
+function toggleMeGusta(btn) {
+    const pk = btn.dataset.pk;
+    fetch(`/cancion/${pk}/me-gusta/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrfToken}
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.accion === 'añadido') {
+            btn.textContent = '♥';
+            btn.classList.add('activo');
+        } else {
+            btn.textContent = '♡';
+            btn.classList.remove('activo');
+        }
+    });
+}
+
+function añadirAPlaylist(cancionPk, playlistPk, btn) {
+    fetch(`/cancion/${cancionPk}/añadir/${playlistPk}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrfToken}
+    })
+    .then(r => r.json())
+    .then(data => alert(data.mensaje));
+}
+</script>
+{% endblock %}

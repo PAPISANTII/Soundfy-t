@@ -1,0 +1,33 @@
+{% load static %}
+<nav class="navbar">
+    {% load static %}
+    <div class="navbar-logo">
+        <a href="{% url 'inicio' %}">
+            <img src="{% static 'img/logo.png' %}" alt="Soundfy" height="36">
+            <span>Soundfy</span>
+        </a>
+    </div>
+
+    <div class="navbar-busqueda">
+        <form action="{% url 'buscar' %}" method="GET">
+            <input 
+                type="search" 
+                name="q" 
+                placeholder="¿Qué quieres escuchar?" 
+                value="{{ request.GET.q }}"
+            >
+        </form>
+    </div>
+
+    <div class="navbar-usuario">
+        <a href="{% url 'perfil' username=user.username %}">
+            {% if user.foto_perfil %}
+                <img src="{{ user.foto_perfil.url }}" alt="{{ user.username }}" class="avatar-pequeño">
+            {% else %}
+                <div class="avatar-pequeño avatar-placeholder">{{ user.username|first|upper }}</div>
+            {% endif %}
+            <span>{{ user.username }}</span>
+        </a>
+        <a href="{% url 'logout' %}" class="btn-logout">Cerrar sesión</a>
+    </div>
+</nav>

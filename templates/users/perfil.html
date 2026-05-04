@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block titulo %}{{ perfil.username }} - Soundfy{% endblock %}
+
+{% block contenido %}
+<div class="perfil-cabecera">
+    <div class="perfil-avatar">
+        {% if perfil.foto_perfil %}
+            <img src="{{ perfil.foto_perfil.url }}" alt="{{ perfil.username }}">
+        {% else %}
+            <div class="avatar-grande">{{ perfil.username|first|upper }}</div>
+        {% endif %}
+    </div>
+    <div class="perfil-info">
+        <span class="texto-muted">Perfil</span>
+        <h1>{{ perfil.username }}</h1>
+        {% if perfil.biografia %}
+            <p class="texto-muted">{{ perfil.biografia }}</p>
+        {% endif %}
+        <div class="perfil-stats">
+            <span><strong>{{ perfil.canciones.count }}</strong> canciones</span>
+            <span><strong>{{ perfil.playlists.count }}</strong> playlists</span>
+            <span><strong>{{ perfil.seguidores.count }}</strong> seguidores</span>
+        </div>
+        <div class="perfil-acciones">
+            {% if es_propio %}
+                <a href="{% url 'editar_perfil' %}" class="btn-primario btn-bloque">Editar perfil</a>
+            {% else %}
+                <a href="{% url 'seguir_usuario' username=perfil.username %}" 
+                   class="{% if ya_sigue %}btn-secundario{% else %}btn-primario{% endif %}">
+                    {% if ya_sigue %}Siguiendo{% else %}Seguir{% endif %}
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if canciones %}
+<section class="perfil-seccion">
+    <h2>Canciones</h2>
+    <div class="lista-canciones">
+        {% for cancion in canciones %}
+            <div class="fila-cancion" onclick="reproducirCancionConCola(
+                    '{{ cancion.archivo_audio.url }}',
+                    '{{ cancion.titulo }}',
+                    '{{ cancion.artista.username }}',
+                    '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
+                    {{ cancion.pk }},
+                    [{% for c in canciones %}{
+                        pk: {{ c.pk }},
+                        url: '{{ c.archivo_audio.url }}',
+                        titulo: '{{ c.titulo }}',
+                        artista: '{{ c.artista.username }}',
+                        portada: '{% if c.portada %}{{ c.portada.url }}{% endif %}'
+                    }{% if not forloop.last %},{% endif %}{% endfor %}]
+                )">
+                <div class="fila-cancion-portada">
+                    {% if cancion.portada %}
+                        <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}" loading="lazy">
+                    {% else %}
+                        <div class="portada-placeholder-pequeña">♪</div>
+                    {% endif %}
+                </div>
+                <div class="fila-cancion-info">
+                    <span class="fila-cancion-titulo">{{ cancion.titulo }}</span>
+                    <span class="texto-muted">{{ cancion.reproducciones }} reproducciones</span>
+                </div>
+                <a href="{% url 'detalle_cancion' pk=cancion.pk %}" 
+                   class="btn-secundario btn-pequeño"
+                   onclick="event.stopPropagation()">Ver</a>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+
+{% if playlists %}
+<section class="perfil-seccion">
+    <h2>Playlists</h2>
+    <div class="grid-canciones">
+        {% for playlist in playlists %}
+            <a href="{% url 'detalle_playlist' pk=playlist.pk %}" class="tarjeta-cancion">
+                <div class="tarjeta-portada">
+                    {% if playlist.portada %}
+                        <img src="{{ playlist.portada.url }}" alt="{{ playlist.nombre }}" loading="lazy">
+                    {% else %}
+                        <div class="portada-placeholder">♫</div>
+                    {% endif %}
+                </div>
+                <div class="tarjeta-info">
+                    <span class="tarjeta-titulo">{{ playlist.nombre }}</span>
+                    <span class="tarjeta-artista">{{ playlist.canciones.count }} canciones</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+{% endif %}
+{% endblock %}

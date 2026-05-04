@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Soundfy{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/estilos.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Circular+Std:wght@400;500;700&family=Inter:wght@300..700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+{% if user.is_authenticated %}
+    {% include 'partials/navbar.html' %}
+    {% include 'partials/sidebar.html' %}
+
+    <main class="contenido-principal">
+        {% if messages %}
+            <div class="mensajes">
+                {% for mensaje in messages %}
+                    <div class="alerta alerta-{{ mensaje.tags }}">{{ mensaje }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block contenido %}{% endblock %}
+    </main>
+
+    {% include 'partials/reproductor.html' %}
+
+{% else %}
+    <main class="pagina-auth">
+        {% block contenido_auth %}{% endblock %}
+    </main>
+{% endif %}
+
+<script src="{% static 'js/reproductor.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

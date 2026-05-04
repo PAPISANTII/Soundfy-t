@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Inicio - Soundfy{% endblock %}
+
+{% block contenido %}
+<section>
+    <h2>Novedades</h2>
+    {% if canciones_recientes %}
+        <div class="grid-canciones">
+            {% for cancion in canciones_recientes %}
+                <div class="tarjeta-cancion" onclick="reproducirCancionConCola(
+                        '{{ cancion.archivo_audio.url }}',
+                        '{{ cancion.titulo }}',
+                        '{{ cancion.artista.username }}',
+                        '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
+                        {{ cancion.pk }},
+                        [{% for c in canciones_recientes %}{
+                            pk: {{ c.pk }},
+                            url: '{{ c.archivo_audio.url }}',
+                            titulo: '{{ c.titulo }}',
+                            artista: '{{ c.artista.username }}',
+                            portada: '{% if c.portada %}{{ c.portada.url }}{% endif %}'
+                        }{% if not forloop.last %},{% endif %}{% endfor %}]
+                    )">
+                    <div class="tarjeta-portada">
+                        {% if cancion.portada %}
+                            <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}" loading="lazy">
+                        {% else %}
+                            <div class="portada-placeholder">♪</div>
+                        {% endif %}
+                        <div class="overlay-play">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="tarjeta-info">
+                        <span class="tarjeta-titulo">{{ cancion.titulo }}</span>
+                        <span class="tarjeta-artista">{{ cancion.artista.username }}</span>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="texto-muted">Aún no hay canciones. ¡Sube la primera!</p>
+    {% endif %}
+</section>
+{% endblock %}

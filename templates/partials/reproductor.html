@@ -1,0 +1,38 @@
+<div class="reproductor" id="reproductor">
+
+    <div class="reproductor-info">
+        <img src="" alt="" id="reproductor-portada" class="reproductor-portada oculto">
+        <div class="reproductor-texto">
+            <span id="reproductor-titulo">Ninguna canción seleccionada</span>
+            <span id="reproductor-artista" class="texto-muted"></span>
+        </div>
+    </div>
+
+    <div class="reproductor-centro">
+        <div class="reproductor-controles">
+            <button id="btn-anterior" aria-label="Canción anterior">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+            </button>
+            <button id="btn-play-pause" class="btn-play" aria-label="Reproducir">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="icono-play"><path d="M8 5v14l11-7z"/></svg>
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" id="icono-pausa" class="oculto"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <button id="btn-siguiente" aria-label="Siguiente canción">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+            </button>
+        </div>
+
+        <div class="reproductor-progreso">
+            <span id="tiempo-actual">0:00</span>
+            <input type="range" id="barra-progreso" value="0" min="0" max="100" step="1">
+            <span id="tiempo-total">0:00</span>
+        </div>
+    </div>
+
+    <div class="reproductor-volumen">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>
+        <input type="range" id="barra-volumen" value="100" min="0" max="100" step="1">
+    </div>
+
+    <audio id="audio-elemento"></audio>
+</div>

@@ -1,0 +1,25 @@
+{% load static %}
+<aside class="sidebar">
+    <nav class="sidebar-nav">
+        <a href="{% url 'inicio' %}" class="sidebar-link {% if request.resolver_match.url_name == 'inicio' %}activo{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            Inicio
+        </a>
+        <a href="{% url 'buscar' %}" class="sidebar-link {% if request.resolver_match.url_name == 'buscar' %}activo{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Buscar
+        </a>
+        <a href="{% url 'mis_playlists' %}" class="sidebar-link {% if request.resolver_match.url_name == 'mis_playlists' %}activo{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            Tu biblioteca
+        </a>
+        <a href="{% url 'subir_cancion' %}" class="sidebar-link {% if request.resolver_match.url_name == 'subir_cancion' %}activo{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Subir canción
+        </a>
+        <a href="#" class="sidebar-link {% if request.resolver_match.url_name == 'lista_salas' %}activo{% endif %}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat
+        </a>
+    </nav>
+</aside>

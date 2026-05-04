@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Buscar - Soundfy{% endblock %}
+
+{% block contenido %}
+<h2>Buscar</h2>
+
+{% if consulta %}
+    <p class="texto-muted" style="margin: 1rem 0">Resultados para: <strong>{{ consulta }}</strong></p>
+
+    {% if canciones %}
+        <h3>Canciones</h3>
+        <div class="lista-canciones">
+            {% for cancion in canciones %}
+                <div class="fila-cancion" onclick="reproducirCancion(
+                    '{{ cancion.archivo_audio.url }}',
+                    '{{ cancion.titulo }}',
+                    '{{ cancion.artista.username }}',
+                    '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}'
+                )">
+                    <span>{{ cancion.titulo }}</span>
+                    <span class="texto-muted">{{ cancion.artista.username }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if not canciones and not artistas %}
+        <p class="texto-muted">No se encontraron resultados.</p>
+    {% endif %}
+{% else %}
+    <p class="texto-muted" style="margin-top: 1rem">Escribe algo para buscar canciones o artistas.</p>
+{% endif %}
+{% endblock %}

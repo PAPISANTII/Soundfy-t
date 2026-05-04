@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Editar perfil - Soundfy{% endblock %}
+
+{% block contenido %}
+<div class="pagina-centrada">
+    <div class="formulario-contenedor">
+        <h2>Editar perfil</h2>
+        <p class="texto-muted" style="margin: 0.5rem 0 2rem">Actualiza tu información personal.</p>
+
+        <form method="POST" enctype="multipart/form-data" class="formulario-auth">
+            {% csrf_token %}
+            {% for campo in formulario %}
+                <div class="campo-formulario">
+                    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                    {{ campo }}
+                    {% if campo.errors %}
+                        <span class="error-campo">{{ campo.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <div class="formulario-acciones">
+                <button type="submit">Guardar cambios</button>
+                <a href="{% url 'perfil' username=request.user.username %}" class="btn-secundario">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
