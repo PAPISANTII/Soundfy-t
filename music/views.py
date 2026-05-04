@@ -51,8 +51,15 @@ def vista_buscar(request):
 
 @login_required
 def vista_mis_playlists(request):
-    playlists = request.user.playlists.all()
-    return render(request, 'music/mis_playlists.html', {'playlists': playlists})
+    playlists = request.user.playlists.all().order_by('-creada_en')
+    canciones_gustadas = MeGusta.objects.filter(
+        usuario=request.user
+    ).select_related('cancion', 'cancion__artista').order_by('-creado_en')
+
+    return render(request, 'music/mis_playlists.html', {
+        'playlists': playlists,
+        'canciones_gustadas': canciones_gustadas,
+    })
 
 @login_required
 def vista_subir_cancion(request):

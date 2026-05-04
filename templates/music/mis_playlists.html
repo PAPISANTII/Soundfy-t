@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Tu biblioteca - Soundfy{% endblock %}
+
+{% block contenido %}
+<div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem;">
+    <h2>Tu biblioteca</h2>
+    <a href="{% url 'crear_playlist' %}" class="btn-primario">+ Nueva playlist</a>
+</div>
+
+<!-- PLAYLISTS -->
+<h3 style="margin-bottom: 0.75rem">Mis playlists</h3>
+{% if playlists %}
+    <div class="grid-canciones">
+        {% for playlist in playlists %}
+            <a href="{% url 'detalle_playlist' pk=playlist.pk %}" class="tarjeta-cancion" style="text-decoration: none; color: inherit;">
+                <div class="tarjeta-portada">
+                    {% if playlist.portada %}
+                        <img src="{{ playlist.portada.url }}" alt="{{ playlist.nombre }}" loading="lazy">
+                    {% else %}
+                        <div class="portada-placeholder">♫</div>
+                    {% endif %}
+                </div>
+                <div class="tarjeta-info">
+                    <span class="tarjeta-titulo">{{ playlist.nombre }}</span>
+                    <span class="tarjeta-artista">{{ playlist.canciones.count }} canción{{ playlist.canciones.count|pluralize:"es" }}{% if not playlist.es_publica %} · 🔒{% endif %}</span>
+                </div>
+            </a>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="texto-muted">No tienes playlists todavía.</p>
+{% endif %}
+
+<!-- CANCIONES QUE TE GUSTAN -->
+<h3 style="margin-top: 2rem; margin-bottom: 0.75rem">Canciones que me gustan</h3>
+{% if canciones_gustadas %}
+    <div class="grid-canciones">
+        {% for mg in canciones_gustadas %}
+            <div class="tarjeta-cancion">
+                <div class="tarjeta-portada" style="cursor: pointer;" onclick="reproducirCancion(
+                    '{{ mg.cancion.archivo_audio.url }}',
+                    '{{ mg.cancion.titulo }}',
+                    '{{ mg.cancion.artista.username }}',
+                    '{% if mg.cancion.portada %}{{ mg.cancion.portada.url }}{% endif %}',
+                    {{ mg.cancion.pk }}
+                )">
+                    {% if mg.cancion.portada %}
+                        <img src="{{ mg.cancion.portada.url }}" alt="{{ mg.cancion.titulo }}" loading="lazy">
+                    {% else %}
+                        <div class="portada-placeholder">♫</div>
+                    {% endif %}
+                    <div class="portada-overlay">▶</div>
+                </div>
+                <div class="tarjeta-info">
+                    <a href="{% url 'detalle_cancion' pk=mg.cancion.pk %}" class="tarjeta-titulo" style="text-decoration: none; color: inherit;">
+                        {{ mg.cancion.titulo }}
+                    </a>
+                    <span class="tarjeta-artista">{{ mg.cancion.artista.username }}</span>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p class="texto-muted">Todavía no tienes canciones guardadas. Dale ♥ a las que te gusten.</p>
+{% endif %}
+
+{% endblock %}
