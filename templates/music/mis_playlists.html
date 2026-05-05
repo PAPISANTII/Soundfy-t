@@ -35,15 +35,29 @@
 <!-- CANCIONES QUE TE GUSTAN -->
 <h3 style="margin-top: 2rem; margin-bottom: 0.75rem">Canciones que me gustan</h3>
 {% if canciones_gustadas %}
+    <script>
+        const colaBiblioteca = [
+            {% for mg in canciones_gustadas %}
+            {
+                pk: {{ mg.cancion.pk }},
+                url: "{{ mg.cancion.archivo_audio.url }}",
+                titulo: "{{ mg.cancion.titulo|escapejs }}",
+                artista: "{{ mg.cancion.artista.username|escapejs }}",
+                portada: "{% if mg.cancion.portada %}{{ mg.cancion.portada.url }}{% endif %}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ];
+    </script>
     <div class="grid-canciones">
         {% for mg in canciones_gustadas %}
             <div class="tarjeta-cancion">
-                <div class="tarjeta-portada" style="cursor: pointer;" onclick="reproducirCancion(
+                <div class="tarjeta-portada" style="cursor: pointer;" onclick="reproducirCancionConCola(
                     '{{ mg.cancion.archivo_audio.url }}',
                     '{{ mg.cancion.titulo }}',
                     '{{ mg.cancion.artista.username }}',
                     '{% if mg.cancion.portada %}{{ mg.cancion.portada.url }}{% endif %}',
-                    {{ mg.cancion.pk }}
+                    {{ mg.cancion.pk }},
+                    colaBiblioteca
                 )">
                     {% if mg.cancion.portada %}
                         <img src="{{ mg.cancion.portada.url }}" alt="{{ mg.cancion.titulo }}" loading="lazy">

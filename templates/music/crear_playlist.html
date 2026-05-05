@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block titulo %}Nueva playlist - Soundfy{% endblock %}
+
+{% block contenido %}
+<div class="pagina-centrada">
+    <div class="formulario-contenedor">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
+            <a href="{% url 'mis_playlists' %}" style="color: var(--color-texto-muted); font-size: 1.3rem; line-height:1;">←</a>
+            <h2>Nueva playlist</h2>
+        </div>
+        <p class="texto-muted" style="margin: 0.5rem 0 2rem">Crea una playlist y empieza a añadir canciones.</p>
+
+        <form method="POST" enctype="multipart/form-data" class="formulario-auth">
+            {% csrf_token %}
+            {% for campo in formulario %}
+                <div class="campo-formulario">
+                    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+                    {{ campo }}
+                    {% if campo.help_text %}
+                        <span class="texto-muted" style="font-size:0.8rem">{{ campo.help_text }}</span>
+                    {% endif %}
+                    {% if campo.errors %}
+                        <span class="error-campo">{{ campo.errors|join:", " }}</span>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn-primario btn-bloque" style="margin-top: 1rem">Crear playlist</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

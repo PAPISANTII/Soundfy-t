@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block titulo %}{{ playlist.nombre }} - Soundfy{% endblock %}
+
+{% block contenido %}
+
+<!-- CABECERA -->
+<div class="detalle-cancion" style="padding: 1.5rem 0 2rem;">
+    <div class="detalle-portada">
+        {% if playlist.portada %}
+            <img src="{{ playlist.portada.url }}" alt="{{ playlist.nombre }}">
+        {% else %}
+            <div class="portada-placeholder grande">♫</div>
+        {% endif %}
+    </div>
+    <div class="detalle-info">
+        <span class="texto-muted" style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.1em;">Playlist</span>
+        <h1>{{ playlist.nombre }}</h1>
+        {% if playlist.descripcion %}
+            <p class="texto-muted">{{ playlist.descripcion }}</p>
+        {% endif %}
+        <div class="detalle-stats">
+            <span>Por <a href="{% url 'perfil' username=playlist.propietario.username %}" class="enlace-rosa">{{ playlist.propietario.username }}</a></span>
+            <span>{{ playlist.canciones.count }} canción{{ playlist.canciones.count|pluralize:"es" }}</span>
+            {% if not playlist.es_publica %}<span>🔒 Privada</span>{% endif %}
+        </div>
+        {% if playlist.canciones.all %}
+        <div class="detalle-acciones">
+            <button class="btn-primario" onclick="reproducirCancionConCola(
+                '{{ playlist.canciones.first.archivo_audio.url }}',
+                '{{ playlist.canciones.first.titulo }}',
+                '{{ playlist.canciones.first.artista.username }}',
+                '{% if playlist.canciones.first.portada %}{{ playlist.canciones.first.portada.url }}{% endif %}',
+                {{ playlist.canciones.first.pk }},
+                colaPlaylist
+            )">▶ Reproducir</button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- LISTA DE CANCIONES -->
+{% with canciones=playlist.canciones.all %}
+{% if canciones %}
+<script>
+    const colaPlaylist = [
+        {% for cancion in canciones %}
+        {
+            pk: {{ cancion.pk }},
+            url: "{{ cancion.archivo_audio.url }}",
+            titulo: "{{ cancion.titulo|escapejs }}",
+            artista: "{{ cancion.artista.username|escapejs }}",
+            portada: "{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+</script>
+<div class="lista-canciones">
+    {% for cancion in canciones %}
+    <div class="fila-cancion" id="fila-{{ cancion.pk }}">
+        <span class="texto-muted" style="width:1.5rem; text-align:right; flex-shrink:0;">{{ forloop.counter }}</span>
+        <div style="width:44px; height:44px; flex-shrink:0; border-radius:var(--radio-sm); overflow:hidden; background:var(--color-superficie-2); cursor:pointer;"
+             onclick="reproducirCancionConCola(
+                '{{ cancion.archivo_audio.url }}',
+                '{{ cancion.titulo }}',
+                '{{ cancion.artista.username }}',
+                '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
+                {{ cancion.pk }},
+                colaPlaylist
+             )">
+            {% if cancion.portada %}
+                <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}" style="width:100%;height:100%;object-fit:cover;">
+            {% else %}
+                <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">♫</div>
+            {% endif %}
+        </div>
+        <div style="flex:1; min-width:0; cursor:pointer;"
+             onclick="reproducirCancionConCola(
+                '{{ cancion.archivo_audio.url }}',
+                '{{ cancion.titulo }}',
+                '{{ cancion.artista.username }}',
+                '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
+                {{ cancion.pk }},
+                colaPlaylist
+             )">
+            <span class="tarjeta-titulo">{{ cancion.titulo }}</span>
+            <a href="{% url 'perfil' username=cancion.artista.username %}" class="tarjeta-artista enlace-rosa">{{ cancion.artista.username }}</a>
+        </div>
+        {% if playlist.propietario == request.user %}
+        <button onclick="quitarDePlaylist({{ playlist.pk }}, {{ cancion.pk }})"
+                title="Quitar de playlist"
+                style="color:var(--color-texto-muted); font-size:0.8rem; padding:0.25rem 0.5rem; border-radius:var(--radio-sm); transition: color 180ms ease;"
+                onmouseover="this.style.color='var(--color-peligro)'"
+                onmouseout="this.style.color='var(--color-texto-muted)'">✕</button>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+
+{% else %}
+<div style="text-align:center; padding:4rem 1rem; color:var(--color-texto-muted);">
+    <div style="font-size:3rem; margin-bottom:1rem;">♫</div>
+    <p style="margin-bottom:0.5rem;">Esta playlist está vacía.</p>
+    <p style="font-size:0.85rem;">Añade canciones desde el detalle de cada canción.</p>
+</div>
+{% endif %}
+{% endwith %}
+
+<script>
+function quitarDePlaylist(playlistPk, cancionPk) {
+    fetch(`/playlists/${playlistPk}/eliminar/${cancionPk}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': obtenerCsrf() }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) document.getElementById(`fila-${cancionPk}`).remove();
+    })
+    .catch(console.error);
+}
+</script>
+
+{% endblock %}

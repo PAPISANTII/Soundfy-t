@@ -839,3 +839,56 @@ h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
     outline: none;
     border-color: var(--color-primario);
 }
+
+/* ── Botones extra reproductor (aleatorio / repetir) ── */
+.btn-repro-extra {
+    background: none;
+    border: none;
+    color: var(--color-texto-muted);
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: var(--radio-sm);
+    display: flex;
+    align-items: center;
+    transition: color 0.2s, transform 0.15s;
+}
+.btn-repro-extra:hover { color: var(--color-texto) !important; }
+.btn-repro-extra.activo { color: #FF2D7A !important; }
+
+/* ── Me gusta en el reproductor ── */
+.btn-me-gusta-repro {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    color: var(--color-texto-muted);
+    cursor: pointer;
+    padding: 0 0.25rem;
+    transition: color 0.2s, transform 0.15s;
+    line-height: 1;
+}
+.btn-me-gusta-repro:hover { color: #FF2D7A; transform: scale(1.15); }
+.btn-me-gusta-repro.activo { color: #FF2D7A !important; }
+
+.enlace-rosa {
+    color: var(--color-texto-muted);
+    text-decoration: none;
+    transition: color 180ms ease;
+}
+.enlace-rosa:hover { color: var(--color-primario); }
+
+/* Enlace del título de la canción en el reproductor */
+.reproductor-titulo-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 180ms ease;
+}
+.reproductor-titulo-link:hover { color: var(--color-primario); }
+.reproductor-titulo-link span { font-size: 0.875rem; font-weight: 500; }
+.reproductor-portada-link {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+.reproductor-portada-link:hover img {
+    opacity: 0.8;
+}

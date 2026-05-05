@@ -124,6 +124,11 @@ def vista_toggle_me_gusta(request, pk):
         return JsonResponse({'accion': 'eliminado'})
     return JsonResponse({'accion': 'añadido'})
 
+@login_required
+def vista_me_gusta_estado(request, pk):
+    cancion = get_object_or_404(Cancion, pk=pk)
+    ya_gusta = MeGusta.objects.filter(usuario=request.user, cancion=cancion).exists()
+    return JsonResponse({'ya_gusta': ya_gusta})
 
 @login_required
 def vista_crear_playlist(request):
@@ -139,6 +144,14 @@ def vista_crear_playlist(request):
         formulario = FormularioCrearPlaylist()
 
     return render(request, 'music/crear_playlist.html', {'formulario': formulario})
+
+@login_required
+def vista_eliminar_de_playlist(request, playlist_pk, cancion_pk):
+    if request.method == 'POST':
+        playlist = get_object_or_404(Playlist, pk=playlist_pk, propietario=request.user)
+        PlaylistCancion.objects.filter(playlist=playlist, cancion_id=cancion_pk).delete()
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': False}, status=405)
 
 
 @login_required
