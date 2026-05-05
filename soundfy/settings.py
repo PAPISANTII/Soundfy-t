@@ -1,5 +1,9 @@
 from pathlib import Path
+from dotenv import load_dotenv
 import os
+
+load_dotenv()
+GA_MEASUREMENT_ID = os.environ.get('GOOGLE_ANALYTICS_MEASUREMENT_ID', 'G-VJP82WYC3N')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,6 +53,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'soundfy.context_processors.google_analytics',
             ],
         },
     },
