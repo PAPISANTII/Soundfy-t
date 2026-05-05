@@ -32,6 +32,9 @@
                     {% if ya_sigue %}Siguiendo{% else %}Seguir{% endif %}
                 </a>
             {% endif %}
+            {% if not es_propio %}
+            <a href="{% url 'crear_sala' usuario_id=perfil.pk %}" class="btn-primario btn-bloque">💬 Enviar mensaje</a>
+            {% endif %}
         </div>
     </div>
 </div>

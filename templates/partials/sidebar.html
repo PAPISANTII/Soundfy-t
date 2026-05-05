@@ -17,9 +17,10 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
             Subir canción
         </a>
-        <a href="#" class="sidebar-link {% if request.resolver_match.url_name == 'lista_salas' %}activo{% endif %}">
+        <a href="{% url 'lista_salas' %}" class="sidebar-link {% if request.resolver_match.url_name == 'lista_salas' %}activo{% endif %}">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             Chat
+            <span class="chat-badge-sidebar" id="chat-badge-sidebar" style="display:none"></span>
         </a>
     </nav>
 </aside>

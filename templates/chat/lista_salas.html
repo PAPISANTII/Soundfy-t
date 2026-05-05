@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block titulo %}Mensajes{% endblock %}
+{% block contenido %}
+<div class="chat-lista-container">
+    <h2>Mensajes</h2>
+    {% if salas_data %}
+    <div class="chat-lista">
+        {% for item in salas_data %}
+        <a href="{% url 'sala' sala_id=item.sala.pk %}" class="chat-sala-card">
+            <div class="chat-sala-avatar">
+                {% if item.otro and item.otro.foto_perfil %}
+                    <img src="{{ item.otro.foto_perfil.url }}" alt="{{ item.otro.username }}">
+                {% else %}
+                    <div class="chat-sala-avatar-placeholder">{{ item.otro.username|first|upper }}</div>
+                {% endif %}
+                {% if item.no_leidos > 0 %}
+                    <span class="chat-sala-badge">{{ item.no_leidos }}</span>
+                {% endif %}
+            </div>
+            <div class="chat-sala-info">
+                <div class="chat-sala-top">
+                    <span class="chat-sala-nombre">{{ item.otro.username }}</span>
+                    {% if item.ultimo %}
+                        <span class="chat-sala-hora">{{ item.ultimo.enviado_en|time:"H:i" }}</span>
+                    {% endif %}
+                </div>
+                <div class="chat-sala-preview">
+                    {% if item.ultimo %}
+                        {% if item.no_leidos > 0 %}
+                            <span class="chat-preview-noLeido">{{ item.ultimo.contenido|truncatechars:40 }}</span>
+                        {% else %}
+                            <span>{{ item.ultimo.contenido|truncatechars:40 }}</span>
+                        {% endif %}
+                    {% else %}
+                        <span>Inicia la conversación</span>
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p class="chat-vacio">Todavía no tienes conversaciones. Ve al perfil de un usuario para iniciar una.</p>
+    {% endif %}
+</div>
+{% endblock %}

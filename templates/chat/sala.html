@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block titulo %}{{ otro.username }}{% endblock %}
+{% block contenido %}
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="chat-header-usuario">
+            {% if otro.foto_perfil %}
+                <img src="{{ otro.foto_perfil.url }}" alt="{{ otro.username }}" class="chat-header-avatar">
+            {% else %}
+                <div class="chat-header-avatar chat-header-avatar-placeholder">{{ otro.username|first|upper }}</div>
+            {% endif %}
+            <span class="chat-header-nombre">{{ otro.username }}</span>
+        </div>
+    </div>
+
+    <div class="chat-mensajes" id="chat-mensajes">
+        <div class="chat-mensajes-inner" id="chat-mensajes-inner"></div>
+    </div>
+
+    <div class="chat-input-area">
+        <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
+        <button id="chat-enviar">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+    </div>
+</div>
+
+<script>
+    const salaId = {{ sala.pk }};
+    const usuarioActual = "{{ request.user.username }}";
+    const miAvatar = "{% if request.user.foto_perfil %}{{ request.user.foto_perfil.url }}{% endif %}";
+    const wsUrl = `ws://${window.location.host}/ws/chat/${salaId}/`;
+    const socket = new WebSocket(wsUrl);
+    const contenedor = document.getElementById('chat-mensajes-inner');
+    const scroll = document.getElementById('chat-mensajes');
+    const input = document.getElementById('chat-input');
+
+    socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    const esMio = data.usuario === usuarioActual;
+    const div = document.createElement('div');
+    div.className = `chat-fila ${esMio ? 'mia' : 'suya'}`;
+
+    const avatarSrc = data.foto || '';
+    const avatarHtml = avatarSrc
+        ? `<img src="${avatarSrc}" class="chat-burbuja-avatar" alt="${data.usuario}">`
+        : `<div class="chat-burbuja-avatar-placeholder ${esMio ? 'mio' : ''}">${data.usuario[0].toUpperCase()}</div>`;
+
+    div.innerHTML = `
+        ${!esMio ? avatarHtml : ''}
+        <div class="chat-burbuja ${esMio ? 'mio' : 'suyo'}">
+            <p>${data.mensaje}</p>
+            <span class="chat-hora">${data.enviado_en}</span>
+        </div>
+        ${esMio ? avatarHtml : ''}
+    `;
+    contenedor.appendChild(div);
+    scroll.scrollTop = scroll.scrollHeight;
+};
+</script>
+{% endblock %}
