@@ -1131,10 +1131,15 @@ h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
     display: flex;
     align-items: flex-end;
     gap: 8px;
+    width: 100%;
 }
 /* mensajes propios: bola a la DERECHA */
 .chat-fila.mia {
-    flex-direction: row-reverse;
+    flex-direction: row-reverse !important;
+    justify-content: flex-start;
+}
+.chat-fila.suya {
+    justify-content: flex-start;
 }
 
 .chat-burbuja-avatar {

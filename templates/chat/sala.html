@@ -1,61 +1,90 @@
 {% extends 'base.html' %}
 {% block titulo %}{{ otro.username }}{% endblock %}
+
 {% block contenido %}
 <div class="chat-container">
+
+    <!-- HEADER -->
     <div class="chat-header">
         <div class="chat-header-usuario">
             {% if otro.foto_perfil %}
-                <img src="{{ otro.foto_perfil.url }}" alt="{{ otro.username }}" class="chat-header-avatar">
+                <img src="{{ otro.foto_perfil.url }}" class="chat-header-avatar" alt="{{ otro.username }}">
             {% else %}
-                <div class="chat-header-avatar chat-header-avatar-placeholder">{{ otro.username|first|upper }}</div>
+                <div class="chat-header-avatar-placeholder">{{ otro.username|first|upper }}</div>
             {% endif %}
             <span class="chat-header-nombre">{{ otro.username }}</span>
         </div>
     </div>
 
+    <!-- MENSAJES — solo este div scrollea -->
     <div class="chat-mensajes" id="chat-mensajes">
         <div class="chat-mensajes-inner" id="chat-mensajes-inner"></div>
     </div>
 
+    <!-- INPUT -->
     <div class="chat-input-area">
         <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
         <button id="chat-enviar">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
         </button>
     </div>
+
 </div>
+{% endblock %}
 
+{% block scripts %}
 <script>
-    const salaId = {{ sala.pk }};
-    const usuarioActual = "{{ request.user.username }}";
-    const miAvatar = "{% if request.user.foto_perfil %}{{ request.user.foto_perfil.url }}{% endif %}";
-    const wsUrl = `ws://${window.location.host}/ws/chat/${salaId}/`;
-    const socket = new WebSocket(wsUrl);
-    const contenedor = document.getElementById('chat-mensajes-inner');
-    const scroll = document.getElementById('chat-mensajes');
-    const input = document.getElementById('chat-input');
+const salaId = {{ sala.pk }};
+const usuarioActual = "{{ request.user.username }}";
+const miAvatar = "{% if request.user.foto_perfil %}{{ request.user.foto_perfil.url }}{% endif %}";
 
-    socket.onmessage = function(e) {
-    const data = JSON.parse(e.data);
+const wsUrl = `ws://${window.location.host}/ws/chat/${salaId}/`;
+const socket = new WebSocket(wsUrl);
+
+const contenedor = document.getElementById('chat-mensajes-inner');
+const scroll = document.getElementById('chat-mensajes');
+const input = document.getElementById('chat-input');
+
+function crearBurbuja(data) {
     const esMio = data.usuario === usuarioActual;
     const div = document.createElement('div');
     div.className = `chat-fila ${esMio ? 'mia' : 'suya'}`;
 
-    const avatarSrc = data.foto || '';
+    const avatarSrc = esMio ? miAvatar : (data.foto || '');
     const avatarHtml = avatarSrc
         ? `<img src="${avatarSrc}" class="chat-burbuja-avatar" alt="${data.usuario}">`
-        : `<div class="chat-burbuja-avatar-placeholder ${esMio ? 'mio' : ''}">${data.usuario[0].toUpperCase()}</div>`;
+        : `<div class="chat-burbuja-avatar-placeholder${esMio ? ' mio' : ''}">${data.usuario[0].toUpperCase()}</div>`;
 
     div.innerHTML = `
-        ${!esMio ? avatarHtml : ''}
+        ${avatarHtml}
         <div class="chat-burbuja ${esMio ? 'mio' : 'suyo'}">
             <p>${data.mensaje}</p>
             <span class="chat-hora">${data.enviado_en}</span>
         </div>
-        ${esMio ? avatarHtml : ''}
     `;
-    contenedor.appendChild(div);
+    return div;
+}
+
+socket.onmessage = function(e) {
+    const data = JSON.parse(e.data);
+    contenedor.appendChild(crearBurbuja(data));
     scroll.scrollTop = scroll.scrollHeight;
+
+    if (typeof window.actualizarBadgeChatValor === 'function') {
+        window.actualizarBadgeChatValor(data.no_leidos_global);
+    }
 };
+
+document.getElementById('chat-enviar').addEventListener('click', enviar);
+input.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') enviar();
+});
+
+function enviar() {
+    const msg = input.value.trim();
+    if (!msg) return;
+    socket.send(JSON.stringify({ mensaje: msg }));
+    input.value = '';
+}
 </script>
 {% endblock %}

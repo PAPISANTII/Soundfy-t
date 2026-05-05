@@ -38,23 +38,33 @@
 <script src="{% static 'js/reproductor.js' %}"></script>
 {% block scripts %}{% endblock %}
 <script>
-function actualizarBadgeChat() {
-    fetch("{% url 'chat_no_leidos' %}")
-        .then(r => r.json())
-        .then(data => {
-            const badge = document.getElementById('chat-badge-sidebar');
-            if (badge) {
-                if (data.no_leidos > 0) {
-                    badge.textContent = data.no_leidos;
-                    badge.style.display = 'flex';
-                } else {
-                    badge.style.display = 'none';
-                }
+// Carga inicial del badge (una sola vez, sin polling)
+fetch("{% url 'chat_no_leidos' %}")
+    .then(r => r.json())
+    .then(data => {
+        const badge = document.getElementById('chat-badge-sidebar');
+        if (badge) {
+            if (data.no_leidos > 0) {
+                badge.textContent = data.no_leidos;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
             }
-        });
+        }
+    });
+
+// Función global para que sala.html la llame cuando llegue un mensaje WS
+window.actualizarBadgeChatValor = function(valor) {
+    const badge = document.getElementById('chat-badge-sidebar');
+    if (badge) {
+        if (valor > 0) {
+            badge.textContent = valor;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
 }
-actualizarBadgeChat();
-setInterval(actualizarBadgeChat, 15000);
 </script>
 </body>
 </html>
