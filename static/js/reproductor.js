@@ -135,7 +135,7 @@ btnPlayPausa.addEventListener('click', () => {
 // ── Progreso ────────────────────────────────────────────────────
 let arrastrando = false;
 
-// Ratón (escritorio)
+// Ratón
 barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
 document.addEventListener('mouseup', () => { arrastrando = false; });
 
