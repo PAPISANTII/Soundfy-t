@@ -18,19 +18,10 @@
             </div>
 
             <div class="campo-formulario">
-                <label for="{{ formulario.album.id_for_label }}">{{ formulario.album.label }}</label>
-                {{ formulario.album }}
-                {% if formulario.album.errors %}<span class="error-campo">{{ formulario.album.errors|join:", " }}</span>{% endif %}
-            </div>
-
-            <div class="campo-formulario">
-                <label for="{{ formulario.genero.id_for_label }}">{{ formulario.genero.label }}</label>
-                {{ formulario.genero }}
-                {% if formulario.genero.errors %}<span class="error-campo">{{ formulario.genero.errors|join:", " }}</span>{% endif %}
-            </div>
-
-            <div class="campo-formulario">
                 <label>{{ formulario.archivo_audio.label }}</label>
+                {% if editando and cancion.archivo_audio %}
+                    <p class="archivo-actual">🎵 {{ cancion.archivo_audio.name|cut:"canciones/" }}</p>
+                {% endif %}
                 <div class="file-input-wrapper">
                     <label class="file-input-label" for="{{ formulario.archivo_audio.id_for_label }}">
                         <span class="file-input-btn">📁 Seleccionar archivo</span>
@@ -43,6 +34,9 @@
 
             <div class="campo-formulario">
                 <label>{{ formulario.portada.label }}</label>
+                {% if editando and cancion.portada %}
+                    <img src="{{ cancion.portada.url }}" alt="Portada actual" class="portada-preview">
+                {% endif %}
                 <div class="file-input-wrapper">
                     <label class="file-input-label" for="{{ formulario.portada.id_for_label }}">
                         <span class="file-input-btn">🖼️ Seleccionar imagen</span>

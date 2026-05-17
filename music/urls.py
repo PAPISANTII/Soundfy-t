@@ -15,4 +15,5 @@ urlpatterns = [
     path('cancion/<int:pk>/editar/', views.vista_editar_cancion, name='editar_cancion'),
     path('cancion/<int:pk>/me-gusta-estado/', views.vista_me_gusta_estado, name='me_gusta_estado'),
     path('playlists/<int:playlist_pk>/eliminar/<int:cancion_pk>/', views.vista_eliminar_de_playlist, name='eliminar_de_playlist'),
+    path('buscar/ajax/', views.vista_buscar_ajax, name='buscar_ajax'),
 ]

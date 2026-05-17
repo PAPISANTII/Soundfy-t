@@ -9,14 +9,16 @@
     </div>
 
     <div class="navbar-busqueda">
-        <form action="{% url 'buscar' %}" method="GET">
+        <div class="barra-busqueda-wrapper" style="position: relative;">
             <input 
-                type="search" 
-                name="q" 
-                placeholder="¿Qué quieres escuchar?" 
-                value="{{ request.GET.q }}"
+                type="search"
+                id="buscador-global"
+                class="barra-busqueda"
+                placeholder="¿Qué quieres escuchar?"
+                autocomplete="off"
             >
-        </form>
+            <div id="buscador-dropdown" class="buscador-dropdown" style="display:none;"></div>
+        </div>
     </div>
 
     <div class="navbar-usuario">

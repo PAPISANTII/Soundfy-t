@@ -76,5 +76,80 @@ window.actualizarBadgeChatValor = function(valor) {
     }
 }
 </script>
+<script>
+(function() {
+    const input = document.getElementById('buscador-global');
+    const dropdown = document.getElementById('buscador-dropdown');
+    if (!input) return;
+
+    let timer = null;
+
+    input.addEventListener('input', function() {
+        clearTimeout(timer);
+        const q = this.value.trim();
+        if (!q) { dropdown.style.display = 'none'; return; }
+
+        timer = setTimeout(() => {
+            fetch(`/buscar/ajax/?q=${encodeURIComponent(q)}`)
+                .then(r => r.json())
+                .then(data => renderDropdown(data.resultados, q));
+        }, 200);
+    });
+
+    function renderDropdown(resultados, q) {
+        if (!resultados.length) {
+            dropdown.innerHTML = `<div class="buscador-sin-resultados">Sin resultados para "${q}"</div>`;
+            dropdown.style.display = 'block';
+            return;
+        }
+
+        const canciones = resultados.filter(r => r.tipo === 'cancion');
+        const artistas  = resultados.filter(r => r.tipo === 'artista');
+        let html = '';
+
+        if (canciones.length) {
+            html += `<div class="buscador-tipo-label">Canciones</div>`;
+            canciones.forEach(r => {
+                const img = r.portada
+                    ? `<img src="${r.portada}" alt="${r.titulo}">`
+                    : `<div class="buscador-avatar">🎵</div>`;
+                html += `<a href="${r.url}" class="buscador-item">
+                    ${img}
+                    <div class="buscador-item-info">
+                        <span class="buscador-item-titulo">${r.titulo}</span>
+                        <span class="buscador-item-sub">${r.artista}</span>
+                    </div>
+                </a>`;
+            });
+        }
+
+        if (artistas.length) {
+            html += `<div class="buscador-tipo-label">Artistas</div>`;
+            artistas.forEach(r => {
+                const img = r.portada
+                    ? `<img src="${r.portada}" alt="${r.titulo}" style="border-radius:50%">`
+                    : `<div class="buscador-avatar">👤</div>`;
+                html += `<a href="${r.url}" class="buscador-item">
+                    ${img}
+                    <div class="buscador-item-info">
+                        <span class="buscador-item-titulo">${r.titulo}</span>
+                        <span class="buscador-item-sub">Artista</span>
+                    </div>
+                </a>`;
+            });
+        }
+
+        dropdown.innerHTML = html;
+        dropdown.style.display = 'block';
+    }
+
+    // Cerrar al hacer click fuera
+    document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+            dropdown.style.display = 'none';
+        }
+    });
+})();
+</script>
 </body>
 </html>

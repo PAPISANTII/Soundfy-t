@@ -64,7 +64,7 @@ def vista_mis_playlists(request):
 @login_required
 def vista_subir_cancion(request):
     if request.method == 'POST':
-        formulario = FormularioSubirCancion(request.user, request.POST, request.FILES)
+        formulario = FormularioSubirCancion(request.POST, request.FILES)
         if formulario.is_valid():
             cancion = formulario.save(commit=False)
             cancion.artista = request.user
@@ -79,7 +79,7 @@ def vista_subir_cancion(request):
             messages.success(request, f'"{cancion.titulo}" subida correctamente.')
             return redirect('detalle_cancion', pk=cancion.pk)
     else:
-        formulario = FormularioSubirCancion(request.user)
+        formulario = FormularioSubirCancion()
 
     return render(request, 'music/subir_cancion.html', {'formulario': formulario})
 
@@ -180,16 +180,50 @@ def vista_añadir_a_playlist(request, cancion_pk, playlist_pk):
 def vista_editar_cancion(request, pk):
     cancion = get_object_or_404(Cancion, pk=pk, artista=request.user)
     if request.method == 'POST':
-        formulario = FormularioSubirCancion(request.user, request.POST, request.FILES, instance=cancion)
+        formulario = FormularioSubirCancion(request.POST, request.FILES, instance=cancion)
         if formulario.is_valid():
             formulario.save()
             messages.success(request, 'Canción actualizada correctamente.')
             return redirect('detalle_cancion', pk=cancion.pk)
     else:
-        formulario = FormularioSubirCancion(request.user, instance=cancion)
+        formulario = FormularioSubirCancion(instance=cancion)
     return render(request, 'music/subir_cancion.html', {
         'formulario': formulario,
         'editando': True,
         'cancion': cancion,
     })
     
+@login_required
+def vista_buscar_ajax(request):
+    consulta = request.GET.get('q', '').strip()
+    resultados = []
+    if len(consulta) >= 1:
+        canciones = Cancion.objects.filter(
+            titulo__icontains=consulta,
+            es_publica=True
+        ).select_related('artista')[:8]
+
+        artistas = Usuario.objects.filter(
+            username__icontains=consulta
+        )[:5]
+
+        for c in canciones:
+            resultados.append({
+                'tipo': 'cancion',
+                'id': c.pk,
+                'titulo': c.titulo,
+                'artista': c.artista.username,
+                'portada': c.portada.url if c.portada else '',
+                'url': f'/cancion/{c.pk}/',
+            })
+        for a in artistas:
+            resultados.append({
+                'tipo': 'artista',
+                'id': a.pk,
+                'titulo': a.username,
+                'artista': '',
+                'portada': a.foto_perfil.url if a.foto_perfil else '',
+                'url': f'/users/perfil/{a.username}/',
+            })
+
+    return JsonResponse({'resultados': resultados})
