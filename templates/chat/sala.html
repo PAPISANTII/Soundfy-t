@@ -12,7 +12,7 @@
             {% else %}
                 <div class="chat-header-avatar-placeholder">{{ otro.username|first|upper }}</div>
             {% endif %}
-            <span class="chat-header-nombre">{{ otro.username }}</span>
+            <a href="{% url 'perfil' otro.username %}" class="chat-header-nombre">{{ otro.username }}</a>
         </div>
     </div>
 

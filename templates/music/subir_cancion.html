@@ -10,20 +10,66 @@
 
         <form method="POST" enctype="multipart/form-data" class="formulario-auth">
             {% csrf_token %}
-            {% for campo in formulario %}
-                <div class="campo-formulario">
-                    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
-                    {{ campo }}
-                    {% if campo.help_text %}
-                        <span class="texto-muted" style="font-size:0.8rem">{{ campo.help_text }}</span>
-                    {% endif %}
-                    {% if campo.errors %}
-                        <span class="error-campo">{{ campo.errors|join:", " }}</span>
-                    {% endif %}
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.titulo.id_for_label }}">{{ formulario.titulo.label }}</label>
+                {{ formulario.titulo }}
+                {% if formulario.titulo.errors %}<span class="error-campo">{{ formulario.titulo.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.album.id_for_label }}">{{ formulario.album.label }}</label>
+                {{ formulario.album }}
+                {% if formulario.album.errors %}<span class="error-campo">{{ formulario.album.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.genero.id_for_label }}">{{ formulario.genero.label }}</label>
+                {{ formulario.genero }}
+                {% if formulario.genero.errors %}<span class="error-campo">{{ formulario.genero.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label>{{ formulario.archivo_audio.label }}</label>
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="{{ formulario.archivo_audio.id_for_label }}">
+                        <span class="file-input-btn">📁 Seleccionar archivo</span>
+                        <span class="file-input-name" id="nombre-audio">Ningún archivo seleccionado</span>
+                    </label>
+                    {{ formulario.archivo_audio }}
                 </div>
-            {% endfor %}
+                {% if formulario.archivo_audio.errors %}<span class="error-campo">{{ formulario.archivo_audio.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label>{{ formulario.portada.label }}</label>
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="{{ formulario.portada.id_for_label }}">
+                        <span class="file-input-btn">🖼️ Seleccionar imagen</span>
+                        <span class="file-input-name" id="nombre-portada">Ningún archivo seleccionado</span>
+                    </label>
+                    {{ formulario.portada }}
+                </div>
+                {% if formulario.portada.errors %}<span class="error-campo">{{ formulario.portada.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.es_publica.id_for_label }}">{{ formulario.es_publica.label }}</label>
+                {{ formulario.es_publica }}
+                {% if formulario.es_publica.errors %}<span class="error-campo">{{ formulario.es_publica.errors|join:", " }}</span>{% endif %}
+            </div>
+
             <button type="submit" class="btn-primario btn-bloque" style="margin-top: 1rem">Subir canción</button>
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('{{ formulario.archivo_audio.id_for_label }}').addEventListener('change', function() {
+    document.getElementById('nombre-audio').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+});
+document.getElementById('{{ formulario.portada.id_for_label }}').addEventListener('change', function() {
+    document.getElementById('nombre-portada').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+});
+</script>
 {% endblock %}

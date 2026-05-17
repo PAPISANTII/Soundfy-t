@@ -1,32 +1,54 @@
 {% extends 'base.html' %}
 
-{% block titulo %}Nueva playlist - Soundfy{% endblock %}
+{% block titulo %}Crear playlist - Soundfy{% endblock %}
 
 {% block contenido %}
 <div class="pagina-centrada">
     <div class="formulario-contenedor">
-        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;">
-            <a href="{% url 'mis_playlists' %}" style="color: var(--color-texto-muted); font-size: 1.3rem; line-height:1;">←</a>
-            <h2>Nueva playlist</h2>
-        </div>
-        <p class="texto-muted" style="margin: 0.5rem 0 2rem">Crea una playlist y empieza a añadir canciones.</p>
+        <h2>Crear playlist</h2>
+        <p class="texto-muted" style="margin: 0.5rem 0 2rem">Organiza tu música como quieras.</p>
 
         <form method="POST" enctype="multipart/form-data" class="formulario-auth">
             {% csrf_token %}
-            {% for campo in formulario %}
-                <div class="campo-formulario">
-                    <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
-                    {{ campo }}
-                    {% if campo.help_text %}
-                        <span class="texto-muted" style="font-size:0.8rem">{{ campo.help_text }}</span>
-                    {% endif %}
-                    {% if campo.errors %}
-                        <span class="error-campo">{{ campo.errors|join:", " }}</span>
-                    {% endif %}
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.nombre.id_for_label }}">{{ formulario.nombre.label }}</label>
+                {{ formulario.nombre }}
+                {% if formulario.nombre.errors %}<span class="error-campo">{{ formulario.nombre.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.descripcion.id_for_label }}">{{ formulario.descripcion.label }}</label>
+                {{ formulario.descripcion }}
+                {% if formulario.descripcion.errors %}<span class="error-campo">{{ formulario.descripcion.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label>{{ formulario.portada.label }}</label>
+                <div class="file-input-wrapper">
+                    <label class="file-input-label" for="{{ formulario.portada.id_for_label }}">
+                        <span class="file-input-btn">🖼️ Seleccionar imagen</span>
+                        <span class="file-input-name" id="nombre-portada">Ningún archivo seleccionado</span>
+                    </label>
+                    {{ formulario.portada }}
                 </div>
-            {% endfor %}
+                {% if formulario.portada.errors %}<span class="error-campo">{{ formulario.portada.errors|join:", " }}</span>{% endif %}
+            </div>
+
+            <div class="campo-formulario">
+                <label for="{{ formulario.es_publica.id_for_label }}">{{ formulario.es_publica.label }}</label>
+                {{ formulario.es_publica }}
+                {% if formulario.es_publica.errors %}<span class="error-campo">{{ formulario.es_publica.errors|join:", " }}</span>{% endif %}
+            </div>
+
             <button type="submit" class="btn-primario btn-bloque" style="margin-top: 1rem">Crear playlist</button>
         </form>
     </div>
 </div>
+
+<script>
+document.getElementById('{{ formulario.portada.id_for_label }}').addEventListener('change', function() {
+    document.getElementById('nombre-portada').textContent = this.files[0] ? this.files[0].name : 'Ningún archivo seleccionado';
+});
+</script>
 {% endblock %}
