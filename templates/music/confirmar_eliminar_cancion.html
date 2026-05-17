@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block titulo %}Eliminar canción - Soundfy{% endblock %}
+
+{% block contenido %}
+<div class="form-wrapper">
+    <h2>Eliminar canción</h2>
+    <p>¿Estás seguro de que quieres eliminar <strong>"{{ cancion.titulo }}"</strong>? Esta acción no se puede deshacer.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger">Sí, eliminar</button>
+        <a href="{% url 'detalle_cancion' cancion.pk %}" class="btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}

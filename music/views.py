@@ -14,38 +14,48 @@ import mutagen
 def vista_inicio(request):
     canciones_recientes = Cancion.objects.filter(
         es_publica=True
-    ).order_by('-fecha_subida')[:10]
-    
-    canciones_populares = Cancion.objects.filter(
+    ).select_related('artista').order_by('-fecha_subida')[:10]
+
+    playlists_recientes = Playlist.objects.filter(
         es_publica=True
-    ).order_by('-reproducciones')[:10]
+    ).select_related('propietario').order_by('-creada_en')[:10]
+
+    from django.db.models import Count
+    usuarios_populares = Usuario.objects.annotate(
+        num_seguidores=Count('seguidores')
+    ).order_by('-num_seguidores')[:10]
 
     return render(request, 'music/inicio.html', {
         'canciones_recientes': canciones_recientes,
-        'canciones_populares': canciones_populares,
+        'playlists_recientes': playlists_recientes,
+        'usuarios_populares': usuarios_populares,
     })
 
 
 @login_required
 def vista_buscar(request):
-    consulta = request.GET.get('q', '')
+    consulta = request.GET.get('q', '').strip()
     canciones = []
     artistas = []
+    trending = []
 
     if consulta:
-        from users.models import Usuario
         canciones = Cancion.objects.filter(
-            titulo__icontains=consulta,
-            es_publica=True
-        )[:20]
+            titulo__icontains=consulta, es_publica=True
+        ).select_related('artista')[:20]
         artistas = Usuario.objects.filter(
             username__icontains=consulta
         )[:10]
+    else:
+        trending = Cancion.objects.filter(
+            es_publica=True
+        ).select_related('artista').order_by('-reproducciones')[:20]
 
     return render(request, 'music/buscar.html', {
         'consulta': consulta,
         'canciones': canciones,
         'artistas': artistas,
+        'trending': trending,
     })
 
 
@@ -227,3 +237,12 @@ def vista_buscar_ajax(request):
             })
 
     return JsonResponse({'resultados': resultados})
+
+@login_required
+def vista_eliminar_cancion(request, pk):
+    cancion = get_object_or_404(Cancion, pk=pk, artista=request.user)
+    if request.method == 'POST':
+        cancion.delete()
+        messages.success(request, f'"{cancion.titulo}" eliminada correctamente.')
+        return redirect('inicio')
+    return render(request, 'music/confirmar_eliminar_cancion.html', {'cancion': cancion})

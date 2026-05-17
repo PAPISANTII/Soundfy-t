@@ -1,46 +1,74 @@
 {% extends 'base.html' %}
-
 {% block titulo %}Inicio - Soundfy{% endblock %}
 
 {% block contenido %}
-<section>
-    <h2>Novedades</h2>
-    {% if canciones_recientes %}
-        <div class="grid-canciones">
+<div class="inicio-wrapper">
+
+    <!-- SECCIÓN 1: Novedades -->
+    <section class="seccion-inicio">
+        <h2 class="seccion-titulo">Novedades</h2>
+        <div class="cards-fila">
             {% for cancion in canciones_recientes %}
-                <div class="tarjeta-cancion" onclick="reproducirCancionConCola(
-                        '{{ cancion.archivo_audio.url }}',
-                        '{{ cancion.titulo }}',
-                        '{{ cancion.artista.username }}',
-                        '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
-                        {{ cancion.pk }},
-                        [{% for c in canciones_recientes %}{
-                            pk: {{ c.pk }},
-                            url: '{{ c.archivo_audio.url }}',
-                            titulo: '{{ c.titulo }}',
-                            artista: '{{ c.artista.username }}',
-                            portada: '{% if c.portada %}{{ c.portada.url }}{% endif %}'
-                        }{% if not forloop.last %},{% endif %}{% endfor %}]
-                    )">
-                    <div class="tarjeta-portada">
-                        {% if cancion.portada %}
-                            <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}" loading="lazy">
-                        {% else %}
-                            <div class="portada-placeholder">♪</div>
-                        {% endif %}
-                        <div class="overlay-play">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-                        </div>
-                    </div>
-                    <div class="tarjeta-info">
-                        <span class="tarjeta-titulo">{{ cancion.titulo }}</span>
-                        <span class="tarjeta-artista">{{ cancion.artista.username }}</span>
-                    </div>
+            <a href="{% url 'detalle_cancion' cancion.pk %}" class="card-cancion">
+                <div class="card-portada">
+                    {% if cancion.portada %}
+                        <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}">
+                    {% else %}
+                        <div class="card-portada-placeholder">♪</div>
+                    {% endif %}
                 </div>
+                <p class="card-titulo">{{ cancion.titulo }}</p>
+                <p class="card-subtitulo">{{ cancion.artista.username }}</p>
+            </a>
+            {% empty %}
+            <p class="vacio-msg">Aún no hay canciones. ¡Sube la primera!</p>
             {% endfor %}
         </div>
-    {% else %}
-        <p class="texto-muted">Aún no hay canciones. ¡Sube la primera!</p>
-    {% endif %}
-</section>
+    </section>
+
+    <!-- SECCIÓN 2: Playlists recientes -->
+    <section class="seccion-inicio">
+        <h2 class="seccion-titulo">Playlists recientes</h2>
+        <div class="cards-fila">
+            {% for playlist in playlists_recientes %}
+            <a href="{% url 'detalle_playlist' playlist.pk %}" class="card-cancion">
+                <div class="card-portada">
+                    {% if playlist.portada %}
+                        <img src="{{ playlist.portada.url }}" alt="{{ playlist.nombre }}">
+                    {% else %}
+                        <div class="card-portada-placeholder">≡</div>
+                    {% endif %}
+                </div>
+                <p class="card-titulo">{{ playlist.nombre }}</p>
+                <p class="card-subtitulo">{{ playlist.propietario.username }}</p>
+            </a>
+            {% empty %}
+            <p class="vacio-msg">Aún no hay playlists públicas.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- SECCIÓN 3: Artistas populares -->
+    <section class="seccion-inicio">
+        <h2 class="seccion-titulo">Artistas populares</h2>
+        <div class="cards-fila">
+            {% for usuario in usuarios_populares %}
+            <a href="{% url 'perfil' usuario.username %}" class="card-cancion card-artista">
+                <div class="card-portada card-portada-redonda">
+                    {% if usuario.foto_perfil %}
+                        <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.username }}">
+                    {% else %}
+                        <div class="card-portada-placeholder">👤</div>
+                    {% endif %}
+                </div>
+                <p class="card-titulo">{{ usuario.username }}</p>
+                <p class="card-subtitulo">{{ usuario.num_seguidores }} seguidore{{ usuario.num_seguidores|pluralize:",s" }}</p>
+            </a>
+            {% empty %}
+            <p class="vacio-msg">No hay usuarios aún.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+</div>
 {% endblock %}

@@ -1,34 +1,81 @@
 {% extends 'base.html' %}
-
 {% block titulo %}Buscar - Soundfy{% endblock %}
 
 {% block contenido %}
-<h2>Buscar</h2>
+<div class="inicio-wrapper">
 
-{% if consulta %}
-    <p class="texto-muted" style="margin: 1rem 0">Resultados para: <strong>{{ consulta }}</strong></p>
+    {% if consulta %}
+        <!-- RESULTADOS DE BÚSQUEDA -->
+        {% if canciones %}
+        <section class="seccion-inicio">
+            <h2 class="seccion-titulo">Canciones — "{{ consulta }}"</h2>
+            <div class="cards-fila">
+                {% for cancion in canciones %}
+                <a href="{% url 'detalle_cancion' cancion.pk %}" class="card-cancion">
+                    <div class="card-portada">
+                        {% if cancion.portada %}
+                            <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}">
+                        {% else %}
+                            <div class="card-portada-placeholder">♪</div>
+                        {% endif %}
+                    </div>
+                    <p class="card-titulo">{{ cancion.titulo }}</p>
+                    <p class="card-subtitulo">{{ cancion.artista.username }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
 
-    {% if canciones %}
-        <h3>Canciones</h3>
-        <div class="lista-canciones">
-            {% for cancion in canciones %}
-                <div class="fila-cancion" onclick="reproducirCancion(
-                    '{{ cancion.archivo_audio.url }}',
-                    '{{ cancion.titulo }}',
-                    '{{ cancion.artista.username }}',
-                    '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}'
-                )">
-                    <span>{{ cancion.titulo }}</span>
-                    <span class="texto-muted">{{ cancion.artista.username }}</span>
-                </div>
-            {% endfor %}
-        </div>
+        {% if artistas %}
+        <section class="seccion-inicio">
+            <h2 class="seccion-titulo">Artistas — "{{ consulta }}"</h2>
+            <div class="cards-fila">
+                {% for usuario in artistas %}
+                <a href="/users/perfil/{{ usuario.username }}/" class="card-cancion card-artista">
+                    <div class="card-portada card-portada-redonda">
+                        {% if usuario.foto_perfil %}
+                            <img src="{{ usuario.foto_perfil.url }}" alt="{{ usuario.username }}">
+                        {% else %}
+                            <div class="card-portada-placeholder">👤</div>
+                        {% endif %}
+                    </div>
+                    <p class="card-titulo">{{ usuario.username }}</p>
+                    <p class="card-subtitulo">Artista</p>
+                </a>
+                {% endfor %}
+        </section>
+        {% endif %}
+
+        {% if not canciones and not artistas %}
+        <section class="seccion-inicio">
+            <p class="vacio-msg">No se encontraron resultados para "{{ consulta }}".</p>
+        </section>
+        {% endif %}
+
+    {% else %}
+        <!-- SIN BÚSQUEDA → TRENDING -->
+        <section class="seccion-inicio">
+            <h2 class="seccion-titulo">🔥 Lo más escuchado</h2>
+            <div class="cards-fila">
+                {% for cancion in trending %}
+                <a href="{% url 'detalle_cancion' cancion.pk %}" class="card-cancion">
+                    <div class="card-portada">
+                        {% if cancion.portada %}
+                            <img src="{{ cancion.portada.url }}" alt="{{ cancion.titulo }}">
+                        {% else %}
+                            <div class="card-portada-placeholder">♪</div>
+                        {% endif %}
+                    </div>
+                    <p class="card-titulo">{{ cancion.titulo }}</p>
+                    <p class="card-subtitulo">{{ cancion.artista.username }} · {{ cancion.reproducciones }} repr.</p>
+                </a>
+                {% empty %}
+                <p class="vacio-msg">Aún no hay canciones en la plataforma.</p>
+                {% endfor %}
+            </div>
+        </section>
     {% endif %}
 
-    {% if not canciones and not artistas %}
-        <p class="texto-muted">No se encontraron resultados.</p>
-    {% endif %}
-{% else %}
-    <p class="texto-muted" style="margin-top: 1rem">Escribe algo para buscar canciones o artistas.</p>
-{% endif %}
+</div>
 {% endblock %}

@@ -132,16 +132,32 @@ btnPlayPausa.addEventListener('click', () => {
     else { audio.pause(); mostrarPlay(); }
 });
 
-// ── Progreso ──────────────────────────────────────────────────
+// ── Progreso ────────────────────────────────────────────────────
 let arrastrando = false;
+
+// Ratón (escritorio)
 barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
+document.addEventListener('mouseup', () => { arrastrando = false; });
+
+// Táctil (móvil)
+barraProgreso.addEventListener('touchstart', () => { arrastrando = true; }, { passive: true });
+barraProgreso.addEventListener('touchend', () => {
+    if (audio.duration) {
+        audio.currentTime = (barraProgreso.value / 100) * audio.duration;
+    }
+    arrastrando = false;
+});
+
 barraProgreso.addEventListener('input', () => {
     if (audio.duration) {
         tiempoActual.textContent = formatearTiempo((barraProgreso.value / 100) * audio.duration);
     }
 });
+
 barraProgreso.addEventListener('change', () => {
-    if (audio.duration) audio.currentTime = (barraProgreso.value / 100) * audio.duration;
+    if (audio.duration) {
+        audio.currentTime = (barraProgreso.value / 100) * audio.duration;
+    }
     arrastrando = false;
 });
 

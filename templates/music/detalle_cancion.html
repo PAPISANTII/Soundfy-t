@@ -60,6 +60,7 @@
         {% if cancion.artista == request.user %}
         <div style="margin-top: 1rem">
             <a href="{% url 'editar_cancion' pk=cancion.pk %}" class="btn-secundario">Editar</a>
+            <a href="{% url 'eliminar_cancion' cancion.pk %}" class="btn-danger">Eliminar</a>
         </div>
         {% endif %}
     </div>
