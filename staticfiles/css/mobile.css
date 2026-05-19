@@ -1,0 +1,208 @@
+/* ============================================================
+   SOUNDFY — mobile.css
+   Incluir DESPUÉS de estilos.css en base.html
+   ============================================================ */
+
+/* 1. NAVBAR */
+@media (max-width: 768px) {
+  .navbar { padding: 0 0.75rem; gap: 0.5rem; }
+  .navbar-logo a span { display: none; }
+  .navbar-busqueda { flex: 1; min-width: 0; }
+  .barra-busqueda-wrapper { width: 100%; }
+  .navbar-busqueda input { width: 100%; font-size: 0.85rem; }
+  .navbar-usuario span { display: none; }
+  .btn-logout { display: none; }
+  .buscador-dropdown { min-width: unset; width: calc(100vw - 1.5rem); left: 0; right: 0; }
+}
+@media (max-width: 480px) {
+  .navbar-busqueda { display: none; }
+}
+
+/* 2. SIDEBAR → ocultar, bottom nav lo reemplaza */
+@media (max-width: 768px) {
+  .sidebar { display: none !important; }
+
+  .bottom-nav {
+    display: flex !important;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: #000;
+    border-top: 1px solid #282828;
+    z-index: 200;
+  }
+  .bottom-nav a {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 0.6rem;
+    color: #b3b3b3;
+    text-decoration: none;
+    padding: 8px 4px;
+    transition: color 180ms ease;
+    position: relative;
+  }
+  .bottom-nav a svg { width: 22px; height: 22px; }
+  .bottom-nav a.activo,
+  .bottom-nav a:hover { color: #e91e8c; }
+  .bottom-nav a span.bottom-badge {
+    position: absolute;
+    top: 6px; right: calc(50% - 18px);
+    background: #e91e8c; color: #fff;
+    font-size: 0.55rem; font-weight: 700;
+    min-width: 16px; height: 16px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 3px;
+    border: 1.5px solid #000;
+  }
+}
+.bottom-nav { display: none; }
+
+/* 3. REPRODUCTOR */
+@media (max-width: 768px) {
+  .reproductor { grid-template-columns: 1fr auto; padding: 0 0.75rem; gap: 0.5rem; }
+  .reproductor-info { min-width: 0; flex: 1; overflow: hidden; }
+  .reproductor-titulo-link span,
+  .reproductor-texto span:first-child {
+    white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; max-width: 130px; display: block;
+  }
+  .reproductor-volumen { display: none; }
+  .reproductor-centro { max-width: 220px; }
+  .btn-repro-extra { display: none; }
+  .reproductor-controles { gap: 0.5rem; }
+}
+@media (max-width: 380px) {
+  .reproductor-info .texto-muted { display: none; }
+  .reproductor-centro { max-width: 170px; }
+}
+
+/* 4. CONTENIDO PRINCIPAL */
+@media (max-width: 768px) {
+  .contenido-principal {
+    padding: 1rem 0.875rem;
+    padding-bottom: calc(90px + 64px + 16px);
+  }
+}
+
+/* 5. INICIO — cards */
+@media (max-width: 768px) {
+  .inicio-wrapper { padding: 16px 0; gap: 28px; }
+  .seccion-titulo { padding: 0 0.875rem; }
+  .cards-fila { padding: 0 0.875rem 8px; gap: 12px; }
+  .card-cancion { min-width: 130px; max-width: 130px; }
+  .card-portada { width: 130px; height: 130px; }
+}
+@media (max-width: 480px) {
+  .card-cancion { min-width: 110px; max-width: 110px; }
+  .card-portada { width: 110px; height: 110px; }
+}
+
+/* 6. GRID CANCIONES */
+@media (max-width: 768px) {
+  .grid-canciones { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 0.75rem; }
+}
+@media (max-width: 480px) {
+  .grid-canciones { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 7. DETALLE CANCIÓN */
+@media (max-width: 768px) {
+  .detalle-cancion {
+    flex-direction: column; align-items: center;
+    gap: 1.25rem; padding: 1.25rem 0; text-align: center;
+  }
+  .detalle-portada { width: 180px; height: 180px; }
+  .detalle-info h1 { font-size: 1.5rem; }
+  .detalle-acciones { flex-wrap: wrap; justify-content: center; }
+  .detalle-stats { justify-content: center; flex-wrap: wrap; gap: 0.5rem; }
+}
+@media (max-width: 480px) {
+  .detalle-portada { width: 150px; height: 150px; }
+  .detalle-info h1 { font-size: 1.3rem; }
+}
+
+/* 8. PERFIL */
+@media (max-width: 768px) {
+  .perfil-cabecera {
+    flex-direction: column; align-items: center;
+    text-align: center; gap: 1rem; padding: 1.5rem 0;
+  }
+  .perfil-avatar img, .avatar-grande { width: 120px; height: 120px; font-size: 3rem; }
+  .perfil-info h1 { font-size: 2rem; }
+  .perfil-stats { justify-content: center; flex-wrap: wrap; gap: 1rem; }
+  .perfil-acciones { justify-content: center; flex-wrap: wrap; }
+}
+@media (max-width: 480px) {
+  .perfil-info h1 { font-size: 1.6rem; }
+  .perfil-avatar img, .avatar-grande { width: 96px; height: 96px; }
+}
+
+/* 9. FORMULARIOS */
+@media (max-width: 768px) {
+  .pagina-centrada { padding: 1.25rem 0.875rem; align-items: flex-start; }
+  .campo-formulario input,
+  .campo-formulario select,
+  .campo-formulario textarea { font-size: 16px; }
+  .formulario-acciones { flex-direction: column; gap: 0.75rem; }
+  .formulario-acciones button[type="submit"],
+  .formulario-acciones a { width: 100%; text-align: center; }
+}
+
+/* 10. CHAT LISTA */
+@media (max-width: 768px) {
+  .chat-lista-container { padding: 16px 8px; }
+}
+
+/* 11. CHAT SALA */
+@media (max-width: 768px) {
+  .chat-container { height: calc(100dvh - 214px); padding: 8px 8px 0; }
+  .chat-burbuja { max-width: 80%; font-size: 0.875rem; }
+  #chat-input { font-size: 16px; }
+}
+
+/* 12. BUSCAR */
+@media (max-width: 480px) {
+  .buscar-input-wrapper { display: block !important; margin-bottom: 1rem; }
+}
+
+/* 13. TIPOGRAFÍA */
+@media (max-width: 768px) {
+  h2 { font-size: 1.2rem; }
+  h3 { font-size: 1rem; }
+}
+
+@media (max-width: 768px) {
+  .cards-fila-artistas {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cards-fila-artistas::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 768px) {
+    /* Ocultar botón Cerrar sesión en móvil */
+    .btn-cerrar-sesion,
+    .logout-btn,
+    a[href*="logout"],
+    form[action*="logout"] button {
+        display: none !important;
+    }
+}
+@media (max-width: 768px) {
+    /* Asegurarse de que el buscador del top navbar sea visible */
+    .navbar-search,
+    .search-bar,
+    .top-search,
+    input[type="search"],
+    .buscador-top {
+        display: block !important;
+        width: 100% !important;
+        max-width: 200px !important;
+    }
+}
