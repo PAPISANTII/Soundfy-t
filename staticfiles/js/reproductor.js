@@ -22,6 +22,7 @@ let reproduccionContada = false;
 let modoAleatorio = false;
 let modoRepetir = false;
 let pkActual = null;
+let arrastrando = false;
 
 // ── Volumen persistente ───────────────────────────────────────
 const volumenGuardado = sessionStorage.getItem('volumen');
@@ -31,7 +32,7 @@ barraVolumen.value = volumenGuardado !== null ? volumenGuardado : 100;
 // ── Helpers ───────────────────────────────────────────────────
 function formatearTiempo(s) {
     if (isNaN(s)) return '0:00';
-    return `${Math.floor(s/60)}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+    return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 }
 function mostrarPausa() {
     iconoPlay.classList.add('oculto');
@@ -46,14 +47,13 @@ function obtenerCsrf() {
     return c ? c.split('=')[1] : '';
 }
 
-// ── Me gusta en el reproductor ────────────────────────────────
+// ── Me gusta ──────────────────────────────────────────────────
 function actualizarBotonMeGusta(yaGusta) {
     if (!btnMeGustaRepro) return;
     btnMeGustaRepro.textContent = yaGusta ? '♥' : '♡';
     btnMeGustaRepro.classList.toggle('activo', yaGusta);
     btnMeGustaRepro.classList.remove('oculto');
 }
-
 function toggleMeGustaRepro() {
     if (!pkActual) return;
     fetch(`/cancion/${pkActual}/me-gusta/`, {
@@ -64,7 +64,6 @@ function toggleMeGustaRepro() {
     .then(data => {
         const yaGusta = data.accion === 'añadido';
         actualizarBotonMeGusta(yaGusta);
-        // Sincronizar con el botón de la página de detalle si está visible
         const btnDetalle = document.querySelector('.btn-me-gusta');
         if (btnDetalle) {
             btnDetalle.textContent = yaGusta ? '♥' : '♡';
@@ -74,19 +73,17 @@ function toggleMeGustaRepro() {
     .catch(console.error);
 }
 
-// ── Aleatorio ─────────────────────────────────────────────────
+// ── Aleatorio / Repetir ───────────────────────────────────────
 function toggleAleatorio() {
     modoAleatorio = !modoAleatorio;
-    btnAleatorio.classList.toggle('activo', modoAleatorio);
     if (modoAleatorio) modoRepetir = false;
+    btnAleatorio.classList.toggle('activo', modoAleatorio);
     btnRepetir.classList.toggle('activo', modoRepetir);
 }
-
-// ── Repetir ───────────────────────────────────────────────────
 function toggleRepetir() {
     modoRepetir = !modoRepetir;
-    btnRepetir.classList.toggle('activo', modoRepetir);
     if (modoRepetir) modoAleatorio = false;
+    btnRepetir.classList.toggle('activo', modoRepetir);
     btnAleatorio.classList.toggle('activo', modoAleatorio);
 }
 
@@ -99,6 +96,13 @@ function reproducirCancion(urlAudio, titulo, artista, urlPortada, pk) {
     pkActual = pk || null;
     audio.dataset.pk = pkActual || '';
 
+    const linkPortada = document.getElementById('reproductor-link-portada');
+    const linkTitulo = document.getElementById('reproductor-link-titulo');
+    const linkArtista = document.getElementById('reproductor-link-artista');
+    if (linkPortada) linkPortada.href = pkActual ? `/cancion/${pkActual}/` : '#';
+    if (linkTitulo) linkTitulo.href = pkActual ? `/cancion/${pkActual}/` : '#';
+    if (linkArtista) linkArtista.href = artista ? `/users/perfil/${artista}/` : '#';
+
     if (urlPortada) {
         reproductorPortada.src = urlPortada;
         reproductorPortada.classList.remove('oculto');
@@ -108,7 +112,6 @@ function reproducirCancion(urlAudio, titulo, artista, urlPortada, pk) {
 
     audio.play().then(() => mostrarPausa()).catch(console.error);
 
-    // Comprobar si ya tiene me gusta
     if (pkActual) {
         fetch(`/cancion/${pkActual}/me-gusta-estado/`)
             .then(r => r.json())
@@ -132,31 +135,10 @@ btnPlayPausa.addEventListener('click', () => {
     else { audio.pause(); mostrarPlay(); }
 });
 
-// ── Progreso ──────────────────────────────────────────────────
-let arrastrando = false;
-
+// ── Progreso (SIN duplicados) ─────────────────────────────────
 barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
 document.addEventListener('mouseup', () => { arrastrando = false; });
 
-barraProgreso.addEventListener('input', () => {
-    arrastrando = true;
-    if (audio.duration) {
-        tiempoActual.textContent = formatearTiempo((barraProgreso.value / 100) * audio.duration);
-    }
-});
-
-barraProgreso.addEventListener('change', () => {
-    if (audio.duration) {
-        audio.currentTime = (barraProgreso.value / 100) * audio.duration;
-    }
-    arrastrando = false;
-});
-
-// Ratón
-barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
-document.addEventListener('mouseup', () => { arrastrando = false; });
-
-// Táctil (móvil)
 barraProgreso.addEventListener('input', () => {
     arrastrando = true;
     if (audio.duration) {
@@ -178,6 +160,13 @@ audio.addEventListener('timeupdate', () => {
         tiempoActual.textContent = formatearTiempo(audio.currentTime);
         tiempoTotal.textContent = formatearTiempo(audio.duration);
     }
+
+    // *** FIX CLAVE: guardar tiempo continuamente, no solo en beforeunload ***
+    if (audio.src && audio.src !== window.location.href) {
+        sessionStorage.setItem('repro_tiempo', audio.currentTime);
+        sessionStorage.setItem('repro_pausado', audio.paused ? '1' : '0');
+    }
+
     if (!reproduccionContada && audio.duration) {
         const umbral = audio.duration < 60 ? audio.duration * 0.5 : 30;
         if (audio.currentTime >= umbral) {
@@ -224,9 +213,7 @@ btnAnterior.addEventListener('click', () => {
 });
 
 // ── Siguiente ─────────────────────────────────────────────────
-btnSiguiente.addEventListener('click', () => {
-    avanzarSiguiente();
-});
+btnSiguiente.addEventListener('click', avanzarSiguiente);
 
 function avanzarSiguiente() {
     if (colaActual.length === 0) return;
@@ -248,7 +235,6 @@ audio.addEventListener('ended', () => {
     mostrarPlay();
     barraProgreso.value = 0;
     tiempoActual.textContent = '0:00';
-
     if (modoRepetir) {
         audio.currentTime = 0;
         audio.play().then(() => mostrarPausa()).catch(console.error);
@@ -257,7 +243,7 @@ audio.addEventListener('ended', () => {
     avanzarSiguiente();
 });
 
-// ── Guardar / Restaurar estado entre páginas ──────────────────
+// ── Guardar estado ────────────────────────────────────────────
 function guardarEstado() {
     if (!audio.src || audio.src === window.location.href) return;
     sessionStorage.setItem('repro_src', audio.src);
@@ -273,6 +259,7 @@ function guardarEstado() {
     sessionStorage.setItem('repro_repetir', modoRepetir ? '1' : '0');
 }
 
+// ── Restaurar estado ──────────────────────────────────────────
 function restaurarEstado() {
     const src = sessionStorage.getItem('repro_src');
     if (!src) return;
@@ -294,7 +281,6 @@ function restaurarEstado() {
     pkActual = sessionStorage.getItem('repro_pk') || null;
     audio.dataset.pk = pkActual || '';
 
-    // Restaurar enlaces
     const linkPortada = document.getElementById('reproductor-link-portada');
     const linkTitulo = document.getElementById('reproductor-link-titulo');
     const linkArtista = document.getElementById('reproductor-link-artista');
