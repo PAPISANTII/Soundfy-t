@@ -1514,3 +1514,313 @@ h3 { font-size: 1.1rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
 .btn-danger:hover {
     background-color: #b8103c;
 }
+
+/* =====================================================
+   FIX MÓVIL — buscador + bottom nav sin solapamiento
+   ===================================================== */
+
+/* ── Bottom nav: siempre visible y bien posicionado ── */
+.bottom-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #000;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    z-index: 200;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 0.5rem;
+}
+
+.bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    color: var(--color-texto-muted);
+    text-decoration: none;
+    font-size: 0.65rem;
+    font-weight: 500;
+    flex: 1;
+    padding: 6px 0;
+    transition: color 180ms ease;
+}
+
+.bottom-nav-item svg { width: 22px; height: 22px; }
+.bottom-nav-item.activo,
+.bottom-nav-item:hover { color: var(--color-primario); }
+
+@media (max-width: 768px) {
+    /* Mostrar bottom nav */
+    .bottom-nav { display: flex; }
+
+    /* El reproductor sube para dejar sitio al bottom nav */
+    .reproductor {
+        bottom: 60px !important;
+        position: fixed !important;
+        left: 0;
+        right: 0;
+        z-index: 150;
+    }
+
+    /* El layout no usa grid-area reproductor, el reproductor es fixed */
+    body:has(.navbar) {
+        grid-template-rows: var(--altura-navbar) 1fr;
+        /* elimina la fila del reproductor del grid */
+    }
+
+    /* Espacio al fondo del contenido: reproductor (90px) + bottom nav (60px) */
+    .contenido-principal {
+        padding-bottom: calc(90px + 60px + 1rem) !important;
+    }
+
+    /* El reproductor (que ahora es fixed) necesita anchura completa */
+    .reproductor {
+        width: 100%;
+        grid-column: unset;
+    }
+}
+
+@media (max-width: 768px) {
+    /* BUSCADOR: reducir en lugar de ocultar */
+    .navbar-busqueda { display: flex !important; flex: 1; min-width: 0; }
+    .navbar-busqueda input {
+        width: 100% !important;
+        min-width: 0;
+        font-size: 0.8rem;
+        padding: 0.45rem 0.75rem;
+    }
+
+    /* Navbar: logo + buscador + avatar sin que se corte */
+    .navbar {
+        gap: 0.75rem;
+    }
+    .navbar-logo a span { display: none; } /* Oculta el texto "Soundfy", deja solo el logo */
+    .navbar-usuario span { display: none; }
+    .btn-logout { display: none; }
+}
+
+@media (max-width: 480px) {
+    /* Sobreescribe el display:none que oculta el buscador */
+    .navbar-busqueda { display: flex !important; }
+    .navbar-busqueda input { width: 100% !important; font-size: 0.8rem; }
+}
+
+/* ===== BIBLIOTECA / MIS PLAYLISTS ===== */
+
+.biblioteca-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+/* Grid de playlists */
+.grid-playlists {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 2.5rem;
+}
+
+.card-playlist {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--color-texto);
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+.card-playlist:hover { opacity: 0.8; }
+
+.card-playlist-portada {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radio-md);
+    object-fit: cover;
+    background: var(--color-superficie-2);
+}
+
+.card-playlist-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radio-md);
+    background: var(--color-superficie-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.card-playlist-nombre {
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.card-playlist-meta {
+    font-size: 0.78rem;
+    color: var(--color-texto-secundario);
+}
+
+/* Lista de canciones gustadas */
+.canciones-gustadas-lista {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.25rem;
+}
+
+.cancion-gustada-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    cursor: pointer;
+    position: relative;
+}
+
+.cancion-gustada-card .portada-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: var(--radio-md);
+    overflow: hidden;
+    background: var(--color-superficie-2);
+}
+
+.cancion-gustada-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.cancion-gustada-card .btn-play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.4);
+    opacity: 0;
+    transition: opacity 0.2s;
+    font-size: 2rem;
+}
+.cancion-gustada-card:hover .btn-play-overlay { opacity: 1; }
+
+.cancion-gustada-card .nombre {
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.cancion-gustada-card .artista {
+    font-size: 0.75rem;
+    color: var(--color-texto-secundario);
+}
+
+/* ── Fix biblioteca: portada-overlay es alias de overlay-play ── */
+.portada-overlay {
+    position: absolute;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radio-full);
+    background: var(--color-primario);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 180ms ease, transform 180ms ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    pointer-events: none;
+}
+
+.tarjeta-cancion:hover .portada-overlay {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ── Fix imagen gigante: forzar aspect-ratio en tarjeta-portada ── */
+.tarjeta-portada {
+    aspect-ratio: 1 / 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: unset !important;
+}
+
+.tarjeta-portada img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
+    position: absolute !important;
+    top: 0; left: 0;
+}
+/* Móvil: lista / Escritorio: grid */
+@media (max-width: 768px) {
+    .canciones-lista-movil     { display: flex; flex-direction: column; gap: 0; }
+    .canciones-grid-escritorio { display: none !important; }
+}
+@media (min-width: 769px) {
+    .canciones-lista-movil     { display: none !important; }
+    .canciones-grid-escritorio { display: grid; }
+}
+
+.cancion-fila {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.cancion-fila:last-child { border-bottom: none; }
+
+.cancion-fila-portada {
+    width: 48px; height: 48px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+}
+.cancion-fila-portada img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+}
+
+.cancion-fila-texto {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; gap: 2px;
+}
+.cancion-fila-titulo {
+    font-size: 0.9rem; font-weight: 600; color: #fff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cancion-fila-artista {
+    font-size: 0.78rem; color: rgba(255,255,255,0.5);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.btn-ver {
+    flex-shrink: 0;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    font-size: 0.78rem; font-weight: 600;
+    color: #fff; text-decoration: none;
+    background: transparent;
+    transition: background 0.2s, border-color 0.2s;
+}
+.btn-ver:hover {
+    background: rgba(255,255,255,0.1);
+    border-color: rgba(255,255,255,0.45);
+}

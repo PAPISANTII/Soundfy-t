@@ -24,39 +24,3 @@
         </a>
     </nav>
 </aside>
-
-{# ── BOTTOM NAV: FUERA del aside para que no lo oculte ── #}
-<nav class="bottom-nav">
-    <a href="{% url 'inicio' %}" class="{% if request.resolver_match.url_name == 'inicio' %}activo{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
-            <path d="M9 21V12h6v9"/>
-        </svg>
-        Inicio
-    </a>
-    <a href="{% url 'buscar' %}" class="{% if request.resolver_match.url_name == 'buscar' %}activo{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
-        </svg>
-        Buscar
-    </a>
-    <a href="{% url 'mis_playlists' %}" class="{% if request.resolver_match.url_name == 'mis_playlists' %}activo{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M3 12h18M3 18h12"/>
-        </svg>
-        Biblioteca
-    </a>
-    <a href="{% url 'subir_cancion' %}" class="{% if request.resolver_match.url_name == 'subir_cancion' %}activo{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12l4-4 4 4"/>
-        </svg>
-        Subir
-    </a>
-    <a href="{% url 'lista_salas' %}" class="{% if request.resolver_match.url_name == 'lista_salas' %}activo{% endif %}">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-        </svg>
-        Chat
-        <span class="bottom-badge" id="chat-badge-bottomnav" style="display:none"></span>
-    </a>
-</nav>

@@ -26,6 +26,31 @@
 {% if user.is_authenticated %}
     {% include 'partials/navbar.html' %}
     {% include 'partials/sidebar.html' %}
+    {% if user.is_authenticated %}
+    <!-- Bottom nav móvil (fuera del sidebar para que no lo oculte el display:none) -->
+    <nav class="bottom-nav">
+        <a href="{% url 'inicio' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'inicio' %}activo{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Inicio
+        </a>
+        <a href="{% url 'buscar' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'buscar' %}activo{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Buscar
+        </a>
+        <a href="{% url 'mis_playlists' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'mis_playlists' %}activo{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h12"/></svg>
+            Biblioteca
+        </a>
+        <a href="{% url 'subir_cancion' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'subir_cancion' %}activo{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+            Subir
+        </a>
+        <a href="{% url 'lista_salas' %}" class="bottom-nav-item {% if request.resolver_match.url_name == 'lista_salas' %}activo{% endif %}">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Chat
+        </a>
+    </nav>
+    {% endif %}
 
     <main class="contenido-principal">
         {% if messages %}

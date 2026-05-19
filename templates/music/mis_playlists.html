@@ -48,7 +48,36 @@
             {% endfor %}
         ];
     </script>
-    <div class="grid-canciones">
+
+    <!-- LISTA ESTILO PERFIL — solo en móvil -->
+    <div class="canciones-lista-movil">
+        {% for mg in canciones_gustadas %}
+        <div class="cancion-fila">
+            <div class="cancion-fila-portada" onclick="reproducirCancionConCola(
+                '{{ mg.cancion.archivo_audio.url }}',
+                '{{ mg.cancion.titulo }}',
+                '{{ mg.cancion.artista.username }}',
+                '{% if mg.cancion.portada %}{{ mg.cancion.portada.url }}{% endif %}',
+                {{ mg.cancion.pk }},
+                colaBiblioteca
+            )">
+                {% if mg.cancion.portada %}
+                    <img src="{{ mg.cancion.portada.url }}" alt="{{ mg.cancion.titulo }}" loading="lazy">
+                {% else %}
+                    <div class="portada-placeholder" style="width:48px;height:48px;font-size:1.2rem;">♫</div>
+                {% endif %}
+            </div>
+            <div class="cancion-fila-texto">
+                <span class="cancion-fila-titulo">{{ mg.cancion.titulo }}</span>
+                <span class="cancion-fila-artista">{{ mg.cancion.artista.username }}</span>
+            </div>
+            <a href="{% url 'detalle_cancion' pk=mg.cancion.pk %}" class="btn-ver">Ver</a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- GRID NORMAL — solo en escritorio -->
+    <div class="grid-canciones canciones-grid-escritorio">
         {% for mg in canciones_gustadas %}
             <div class="tarjeta-cancion">
                 <div class="tarjeta-portada" style="cursor: pointer;" onclick="reproducirCancionConCola(
