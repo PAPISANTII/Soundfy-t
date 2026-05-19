@@ -132,23 +132,33 @@ btnPlayPausa.addEventListener('click', () => {
     else { audio.pause(); mostrarPlay(); }
 });
 
-// ── Progreso ────────────────────────────────────────────────────
+// ── Progreso ──────────────────────────────────────────────────
 let arrastrando = false;
 
-// Ratón
 barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
 document.addEventListener('mouseup', () => { arrastrando = false; });
 
-// Táctil (móvil)
-barraProgreso.addEventListener('touchstart', () => { arrastrando = true; }, { passive: true });
-barraProgreso.addEventListener('touchend', () => {
+barraProgreso.addEventListener('input', () => {
+    arrastrando = true;
+    if (audio.duration) {
+        tiempoActual.textContent = formatearTiempo((barraProgreso.value / 100) * audio.duration);
+    }
+});
+
+barraProgreso.addEventListener('change', () => {
     if (audio.duration) {
         audio.currentTime = (barraProgreso.value / 100) * audio.duration;
     }
     arrastrando = false;
 });
 
+// Ratón
+barraProgreso.addEventListener('mousedown', () => { arrastrando = true; });
+document.addEventListener('mouseup', () => { arrastrando = false; });
+
+// Táctil (móvil)
 barraProgreso.addEventListener('input', () => {
+    arrastrando = true;
     if (audio.duration) {
         tiempoActual.textContent = formatearTiempo((barraProgreso.value / 100) * audio.duration);
     }
@@ -267,10 +277,23 @@ function restaurarEstado() {
     const src = sessionStorage.getItem('repro_src');
     if (!src) return;
 
+    const tiempoGuardado = parseFloat(sessionStorage.getItem('repro_tiempo') || 0);
+    const pausado = sessionStorage.getItem('repro_pausado');
+
     audio.src = src;
-    audio.currentTime = parseFloat(sessionStorage.getItem('repro_tiempo') || 0);
+
+    audio.addEventListener('loadedmetadata', function aplicarTiempo() {
+        audio.currentTime = tiempoGuardado;
+        if (pausado === '0') {
+            audio.play().then(() => mostrarPausa()).catch(() => {});
+        } else {
+            mostrarPlay();
+        }
+    }, { once: true });
+
     pkActual = sessionStorage.getItem('repro_pk') || null;
     audio.dataset.pk = pkActual || '';
+
     // Restaurar enlaces
     const linkPortada = document.getElementById('reproductor-link-portada');
     const linkTitulo = document.getElementById('reproductor-link-titulo');
@@ -305,13 +328,6 @@ function restaurarEstado() {
             .then(r => r.json())
             .then(data => actualizarBotonMeGusta(data.ya_gusta))
             .catch(() => {});
-    }
-    
-    const pausado = sessionStorage.getItem('repro_pausado');
-    if (pausado === '0') {
-        audio.play().then(() => mostrarPausa()).catch(() => {});
-    } else {
-        mostrarPlay();
     }
 }
 
