@@ -17,4 +17,5 @@ urlpatterns = [
     path('playlists/<int:playlist_pk>/eliminar/<int:cancion_pk>/', views.vista_eliminar_de_playlist, name='eliminar_de_playlist'),
     path('buscar/ajax/', views.vista_buscar_ajax, name='buscar_ajax'),
     path('cancion/<int:pk>/eliminar/', views.vista_eliminar_cancion, name='eliminar_cancion'),
+    path('audio/<int:pk>/', views.servir_audio, name='servir_audio'),
 ]

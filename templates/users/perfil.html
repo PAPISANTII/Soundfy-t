@@ -45,14 +45,14 @@
     <div class="lista-canciones">
         {% for cancion in canciones %}
             <div class="fila-cancion" onclick="reproducirCancionConCola(
-                    '{{ cancion.archivo_audio.url }}',
+                    '{% url 'servir_audio' pk=cancion.pk %}',
                     '{{ cancion.titulo }}',
                     '{{ cancion.artista.username }}',
                     '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
                     {{ cancion.pk }},
                     [{% for c in canciones %}{
                         pk: {{ c.pk }},
-                        url: '{{ c.archivo_audio.url }}',
+                        url: '{% url 'servir_audio' pk=c.pk %}',
                         titulo: '{{ c.titulo }}',
                         artista: '{{ c.artista.username }}',
                         portada: '{% if c.portada %}{{ c.portada.url }}{% endif %}'

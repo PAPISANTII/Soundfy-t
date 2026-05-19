@@ -27,7 +27,7 @@
         {% if playlist.canciones.all %}
         <div class="detalle-acciones">
             <button class="btn-primario" onclick="reproducirCancionConCola(
-                '{{ playlist.canciones.first.archivo_audio.url }}',
+                '{% url 'servir_audio' pk=playlist.canciones.first.pk %}',
                 '{{ playlist.canciones.first.titulo }}',
                 '{{ playlist.canciones.first.artista.username }}',
                 '{% if playlist.canciones.first.portada %}{{ playlist.canciones.first.portada.url }}{% endif %}',
@@ -47,7 +47,7 @@
         {% for cancion in canciones %}
         {
             pk: {{ cancion.pk }},
-            url: "{{ cancion.archivo_audio.url }}",
+            url: "{% url 'servir_audio' pk=cancion.pk %}",
             titulo: "{{ cancion.titulo|escapejs }}",
             artista: "{{ cancion.artista.username|escapejs }}",
             portada: "{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}"
@@ -61,7 +61,7 @@
         <span class="texto-muted" style="width:1.5rem; text-align:right; flex-shrink:0;">{{ forloop.counter }}</span>
         <div style="width:44px; height:44px; flex-shrink:0; border-radius:var(--radio-sm); overflow:hidden; background:var(--color-superficie-2); cursor:pointer;"
              onclick="reproducirCancionConCola(
-                '{{ cancion.archivo_audio.url }}',
+                '{% url 'servir_audio' pk=cancion.pk %}',
                 '{{ cancion.titulo }}',
                 '{{ cancion.artista.username }}',
                 '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
@@ -76,7 +76,7 @@
         </div>
         <div style="flex:1; min-width:0; cursor:pointer;"
              onclick="reproducirCancionConCola(
-                '{{ cancion.archivo_audio.url }}',
+                '{% url 'servir_audio' pk=cancion.pk %}',
                 '{{ cancion.titulo }}',
                 '{{ cancion.artista.username }}',
                 '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',

@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,6 +10,7 @@ from .models import Cancion, Playlist, Genero, PlaylistCancion, MeGusta
 from .forms import FormularioSubirCancion, FormularioCrearPlaylist
 from users.models import Usuario
 import mutagen
+from django.http import FileResponse
 
 
 @login_required
@@ -246,3 +249,15 @@ def vista_eliminar_cancion(request, pk):
         messages.success(request, f'"{cancion.titulo}" eliminada correctamente.')
         return redirect('inicio')
     return render(request, 'music/confirmar_eliminar_cancion.html', {'cancion': cancion})
+
+@login_required  
+def servir_audio(request, pk):
+    cancion = get_object_or_404(Cancion, pk=pk)
+    archivo_path = cancion.archivo_audio.path
+    response = FileResponse(
+        open(archivo_path, 'rb'),
+        content_type='audio/mpeg'
+    )
+    response['Accept-Ranges'] = 'bytes'
+    response['Content-Length'] = os.path.getsize(archivo_path)
+    return response

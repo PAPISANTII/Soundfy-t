@@ -23,7 +23,7 @@
         {% endif %}
         <div class="detalle-acciones">
             <button class="btn-primario" onclick="reproducirCancion(
-                '{{ cancion.archivo_audio.url }}',
+                '{% url 'servir_audio' pk=cancion.pk %}',
                 '{{ cancion.titulo }}',
                 '{{ cancion.artista.username }}',
                 '{% if cancion.portada %}{{ cancion.portada.url }}{% endif %}',
